@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS User;
+
 CREATE TABLE User(
 	user_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	username TEXT UNIQUE NOT NULL,
@@ -8,6 +10,8 @@ CREATE TABLE User(
 	unban_date DATETIME
 );
 
+DROP TABLE IF EXISTS Post;
+
 CREATE TABLE Post(
 	post_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	user_id INTEGER NOT NULL,
@@ -15,8 +19,10 @@ CREATE TABLE Post(
 	has_images BOOLEAN,
 	repost_id INTEGER,
 	date_and_time DATETIME NOT NULL,
-	reply_id INTEGER,
+	reply_id INTEGER
 );
+
+DROP TABLE IF EXISTS Report;
 
 CREATE TABLE Report(
 	report_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,6 +34,8 @@ CREATE TABLE Report(
 	date_and_time DATETIME NOT NULL
 );
 
+DROP TABLE IF EXISTS Notification;
+
 CREATE TABLE Notification(
 	user_id INTEGER NOT NULL,
 	interacting_user_id INTEGER NOT NULL,
@@ -37,12 +45,17 @@ CREATE TABLE Notification(
 	date_and_time DATETIME NOT NULL
 );
 
-CREATE TABLE Like(
+DROP TABLE IF EXISTS Likes;
+
+CREATE TABLE Likes(
 	post_id INTEGER NOT NULL,
 	user_id INTEGER NOT NULL
 );
 
+DROP TABLE IF EXISTS Follow;
+
 CREATE TABLE Follow(
 	follower_id INTEGER NOT NULL,
-	followee_id INTEGER NOT NULL,
+	followee_id INTEGER NOT NULL
 );
+

@@ -16,7 +16,4 @@ def initLogin():
                 session['id'] = str(row[0])
                 session['role'] = str(row[3])
 
-        if(session['id']):
-            print(str(session['id']))
-
     return render_template('login.html')
