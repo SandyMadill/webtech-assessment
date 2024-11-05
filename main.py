@@ -1,10 +1,13 @@
-from flask import Flask, g, session
+from flask import Flask, g, session, render_template
 import os
 import sqlite3
 from register import initReg
 from database import get_db
 from login import initLogin
 from createpost import initCreatePost
+from user import User
+from post import Post
+
 
 app = Flask(__name__)
 app.secret_key = 'fkgjdflg£$5;"!4$^&RTH42£$%'
@@ -31,6 +34,17 @@ def login():
 @app.route("/create-post/", methods=['POST','GET'])
 def createPost():
     return initCreatePost()
+
+@app.route("/post/<postId>")
+def post(postId=None):
+    db = get_db()
+    for p in db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]):
+        post = Post(p[0],p[1],p[2],p[3],p[5],None,None)
+        for u in db.cursor().execute("SELECT * FROM User WHERE user_id=?", [str(post.userId)]):
+            user = User(u[0], u[1], u[3], u[4])
+            return render_template("post.html", post=post, user=user)
+        print("id: " + str(post.userId) + " userId: " + str(post.postId) + " text: " + post.postText + " image: " + str(post.hasImages) + " date: " +str(post.dateAndTime))
+    return "aaaaaaaaaa"
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
