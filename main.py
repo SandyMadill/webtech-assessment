@@ -7,11 +7,11 @@ from login import initLogin
 from createpost import initCreatePost
 from user import User
 from post import Post
-
+from follow import simple_page
 
 app = Flask(__name__)
 app.secret_key = 'fkgjdflg£$5;"!4$^&RTH42£$%'
-
+app.register_blueprint(simple_page)
 
 @app.route("/")
 def root():
@@ -30,6 +30,11 @@ def reg():
 @app.route("/login", methods=['POST','GET'])
 def login():
     return initLogin()
+
+@app.route("/logout")
+def logout():
+    session.pop('id', None)
+    session.pop('role', None)
 
 @app.route("/create-post/", methods=['POST','GET'])
 def createPost():
