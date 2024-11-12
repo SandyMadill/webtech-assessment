@@ -1,1 +1,7 @@
-<button>follow</button>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body onload="init({{following}})">
+<script src="{{url_for('static', filename='follow.js')}}"></script>
+<div id="button" onload="init()"></div>
+</body>
