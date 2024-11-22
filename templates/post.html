@@ -1,3 +1,38 @@
-<h1>{{user.displayName}}</h1>
-<h2>{{user.username}}</h2>
-<p>{{post.postText}}</p>
+<link rel="stylesheet" href="styles.css">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet"/>
+<script src="{{url_for('static', filename='post.js')}}"></script>
+<script src="{{url_for('static', filename='follow.js')}}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+{{ post.postId }}
+<body onload='initPost({{ user.userId }}, {{ post.postId }})'>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h1>{{user.displayName}}</h1>
+                <h2>{{user.username}}</h2>
+            </div>
+            <div class="col" id="follow-button">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                {{post.postText}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                Likes: <lc id="like-count"></lc>
+            </div>
+            <div class="col">
+                Reposts: <rc id="repost-count"></rc>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col" id="like-button">
+            </div>
+            <div class="col" id="repost-button">
+            </div>
+        </div>
+    </div>
+</body>

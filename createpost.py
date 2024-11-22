@@ -1,7 +1,10 @@
-from flask import render_template, request, session
+from flask import render_template, request, session, Blueprint
 from database import get_db
 import datetime
 
+createPostApi = Blueprint('create-post-api', __name__, template_folder='templates')
+
+@createPostApi.route("/create-post/", methods=['POST','GET'])
 def initCreatePost():
     try:
         if (session['id'] and session['role']):
