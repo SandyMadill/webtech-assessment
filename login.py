@@ -1,12 +1,14 @@
-from flask import render_template, request, session
+from flask import render_template, request, session, Blueprint
 from database import get_db
 import bcrypt
 
+from user import checkSession
+
+loginApi = Blueprint('login-api', __name__, template_folder='templates')
+
+@loginApi.route("/login/", methods=['POST','GET'])
 def initLogin():
-    try:
-        if (session['id']):
-            return "Already Logged in"
-    except KeyError:
+    if checkSession() == False:
         db = get_db()
         if request.method == 'POST':
             username = request.form['username']
@@ -21,3 +23,5 @@ def initLogin():
                     session['role'] = str(row[3])
                     print(session['id'])
         return render_template('login.html')
+    else:
+        return "Already Logged In"

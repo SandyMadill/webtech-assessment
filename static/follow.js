@@ -1,46 +1,34 @@
-function initFollow(id){
+function follow(userId){
     $.ajax({
-                url: (`http://127.0.0.1:5000/follow/button/${id}/`),
-                type: 'GET',
-                contentType: 'application/json',
-                success: function(response) {
-
-                                document.getElementById("follow-button").innerHTML = response
-                },
-                error: function(error) {
-                    console.log(error);
+        url: (`${config.host}/follow/${userId}/`),
+        type: 'POST',
+        contentType: 'application/json',
+        success: function(response) {
+            if (response !== "null"){
+                for (const element of document.getElementsByClassName(`follow-button-${userId}`)){
+                    element.innerHTML = response
                 }
-            });
+            }
+            },
+        error: function(error) {
+            console.log(error);
+        }
+    });
 }
-
-function follow(id){
-        $.ajax({
-                url: (`http://127.0.0.1:5000/follow/${id}/`),
-                type: 'POST',
-                contentType: 'application/json',
-                success: function(response) {
-                    if (response !== "null"){
-                        document.getElementById("follow-button").innerHTML = response
-                    }
-                },
-                error: function(error) {
-                    console.log(error);
+function unfollow(userId){
+    $.ajax({
+        url: (`${config.host}/follow/${userId}/`),
+        type: 'DELETE',
+        contentType: 'application/json',
+        success: function(response) {
+            if (response !== "null"){
+                for (const element of document.getElementsByClassName(`follow-button-${userId}`)){
+                    element.innerHTML = response
                 }
-            });
-}
-
-function unfollow(id){
-        $.ajax({
-                url: (`http://127.0.0.1:5000/follow/${id}/`),
-                type: 'DELETE',
-                contentType: 'application/json',
-                success: function(response) {
-                    if (response !== "null"){
-                        document.getElementById("follow-button").innerHTML = response
-                    }
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
+            }
+            },
+        error: function(error) {
+            console.log(error);
+        }
+    });
 }

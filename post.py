@@ -1,10 +1,11 @@
 import datetime
 from crypt import methods
-
+from config import config
 from flask import Blueprint, render_template, session
-
 from database import get_db
-from user import User, checkSession
+from follow import isFollowing
+from user import User, checkSession, getUserFromSql, getUser
+from usersession import getSession
 
 postApi = Blueprint('post-api', __name__, template_folder='templates')
 
@@ -17,18 +18,42 @@ class Post:
         self.replyId = replyId
         self.dateAndTime = dateAndTime
         self.repostId = repostId
+        self.likeCount = len(getLikes(postId))
+        self.repostCount = len(getReposts(postId))
+        self.likesPost = None
+        self.repostedPost = None
+        if (checkSession()):
+            self.likesPost = likesPost(postId)
+            self.repostedPost = repostedPost(postId)
 
+
+def getPostFromSql(sql):
+    for p in sql:
+        post = Post(p[0], p[1], p[2], p[3], p[5], p[6], p[4])
+        db = get_db()
+        if post.repostId == None:
+            return post
+        else:
+            rpsql = db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [post.repostId])
+            for rp in rpsql:
+                repost = Post(rp[0], rp[1], rp[2], rp[3], rp[5], rp[6], post.userId)
+                print(str(repost.repostedPost))
+                return repost
+    return None
 
 @postApi.route("/post/<postId>/")
-def post(postId=None):
+def getPost(postId=None):
     db = get_db()
-    for p in db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]):
-        post = Post(p[0],p[1],p[2],p[3],p[5],None,None)
-        for u in db.cursor().execute("SELECT * FROM User WHERE user_id=?", [str(post.userId)]):
-            user = User(u[0], u[1], u[3], u[4])
-            return render_template("post.html", post=post, user=user)
-        print("id: " + str(post.userId) + " userId: " + str(post.postId) + " text: " + post.postText + " image: " + str(post.hasImages) + " date: " +str(post.dateAndTime))
-    return "Post Does Not Exist"
+    post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
+
+
+    if (post.repostId == None):
+        user = getUser(post.userId)
+        return render_template("post.html", post=post, user=user, rpUser=None, userSession=getSession(), following = isFollowing(post.userId))
+    else:
+        user = getUser(post.userId)
+        rpUser = getUser(post.repostId)
+        return render_template("post.html", post=post, user=user, rpUser=rpUser, userSession=getSession(), following = isFollowing(post.userId))
 
 @postApi.route('/post/like/<postId>/')
 def getLikes(postId=None):
@@ -43,11 +68,12 @@ def getLikes(postId=None):
 @postApi.route('/post/like/button/<postId>/', methods=["GET"])
 def getLikeButton(postId=None):
     if checkSession():
-        db = get_db()
+        db= get_db()
+        post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
         if (likesPost(postId)):
-            return render_template("unlike-button.html")
+            return render_template("unlike-button.html", post=post)
         else:
-            return render_template("like-button.html")
+            return render_template("like-button.html", post=post)
 
 @postApi.route('/post/like/<postId>/', methods=["POST"])
 def likePost(postId=None):
@@ -89,11 +115,12 @@ def getReposts(postId=None):
 def getRepostButton(postId=None):
     if checkSession():
         db = get_db()
-        sql = db.cursor().execute("SELECT * FROM User")
+        post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
+        db.commit()
         if (repostedPost(postId)):
-            return render_template("unrepost-button.html")
+            return render_template("unrepost-button.html", post=post)
         else:
-            return render_template("repost-button.html")
+            return render_template("repost-button.html", post=post)
 
 @postApi.route('/post/repost/<postId>/', methods=["POST"])
 def repost(postId=None):

@@ -1,17 +1,19 @@
 from flask import Blueprint, render_template, session, request
+
+from config import config
 from database import get_db
-from user import checkSession
+from user import checkSession, getUserFromSql
 
 followApi = Blueprint('follow-api', __name__, template_folder='templates')
 @followApi.route('/follow/<followeeId>')
 def init_follow(followeeId=None):
     if (checkSession()):
         if (followeeId != session['id']):
-            return render_template("follow.html", userId=followeeId)
+            return render_template("follow.html", userId=followeeId, config=config)
         else:
-            return "null"
+            return ""
     else:
-        return "null"
+        return ""
 @followApi.route('/follow/<followeeId>/', methods=["POST"])
 def followUser(followeeId=None):
     if (checkSession()):
@@ -40,10 +42,11 @@ def getFollowButton(followeeId=None):
     if (checkSession()):
         if (followeeId != session['id']):
            db = get_db()
+           user = getUserFromSql(db.execute('SELECT * FROM USER WHERE user_id=?',[followeeId]))
            if isFollowing(followeeId):
-               return render_template("unfollowbutton.html",userId=followeeId)
+               return render_template("unfollowbutton.html",user=user)
            else:
-               return render_template("followbutton.html", userId=followeeId)
+               return render_template("followbutton.html", user=user)
         else:
             return "null"
     else:

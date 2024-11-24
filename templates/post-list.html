@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/styles.css')}}">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{{url_for('static', filename='postlist.js')}}"></script>
+<script src="{{url_for('static', filename='post.js')}}"></script>
+<script src="{{url_for('static', filename='config.js')}}"></script>
+<body onload="initPostList({{ posts }}, '{{ lastDate }}')">
+{{ lastDate }}
+    <div class="container">
+        <div id="post-list" class="post-list"></div>
+    </div>
+    <div class="end">SDFSFGSDGDDFG
+    DDFGDFG
+    DFGDFG
+    DFGDFG
+    </div>
+</body>

@@ -1,69 +1,32 @@
-let userId;
-let postId;
-let likes;
-let reposts;
 
-function  initPost(uId, pId){
-    userId = uId
-    postId = pId
+function getLikes(postId){
     $.ajax({
-                url: (`http://127.0.0.1:5000/follow/button/${userId}/`),
-                type: 'GET',
-                contentType: 'application/json',
-                success: function(response) {
-                    if (response !=="null"){
-                        document.getElementById("follow-button").innerHTML = response
-                    }
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
-    getLikes()
-    getReposts()
-}
-
-function getLikes(){
-
-    $.ajax({
-        url: (`http://127.0.0.1:5000/post/like/${postId}/`),
+        url: (`${config.host}/post/like/${postId}/`),
         type: 'GET',
         contentType: 'application/json',
         success: function(response) {
             if (response !=="null") {
-                likes = response.length
-                document.getElementById("like-count").innerHTML = likes
-            }
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    });
-
-    $.ajax({
-        url: (`http://127.0.0.1:5000/post/like/button/${postId}/`),
-        type: 'GET',
-        contentType: 'application/json',
-        success: function(response) {
-            if (response !=="null"){
-                document.getElementById("like-button").innerHTML = response
-            }
-            },
+                for (const element of document.getElementsByClassName(`like-count-${postId}`)){
+                    element.innerHTML = response.length
+                }
+            }},
         error: function(error) {
             console.log(error);
         }
     });
 }
 
-function likePost(){
+function likePost(postId){
     $.ajax({
-        url: (`http://127.0.0.1:5000/post/like/${postId}/`),
+        url: (`${config.host}/post/like/${postId}/`),
         type: 'POST',
         contentType: 'application/json',
         success: function(response) {
-            if (response !=="null"){
-                document.getElementById("like-button").innerHTML = response
-                getLikes()
+            if (response !== "null") {
+                for (const element of document.getElementsByClassName(`like-button-${postId}`)) {
+                    element.innerHTML = response
+                }
+                getLikes(postId)
             }
             },
         error: function(error) {
@@ -72,15 +35,17 @@ function likePost(){
     });
 }
 
-function unlikePost(){
+function unlikePost(postId){
     $.ajax({
-        url: (`http://127.0.0.1:5000/post/like/${postId}/`),
+        url: (`${config.host}/post/like/${postId}/`),
         type: 'DELETE',
         contentType: 'application/json',
         success: function(response) {
             if (response !=="null"){
-                document.getElementById("like-button").innerHTML = response
-                getLikes()
+                for (const element of document.getElementsByClassName(`like-button-${postId}`)){
+                    element.innerHTML = response
+                }
+                getLikes(postId)
             }
             },
         error: function(error) {
@@ -89,45 +54,35 @@ function unlikePost(){
     });
 }
 
-function getReposts() {
+function getReposts(postId) {
     $.ajax({
-        url: (`http://127.0.0.1:5000/post/repost/${postId}/`),
+        url: (`${config.host}/post/repost/${postId}/`),
         type: 'GET',
         contentType: 'application/json',
         success: function (response) {
             if (response !== "null") {
-                reposts = response.length
-                document.getElementById("repost-count").innerHTML = reposts
-            }
-        },
-        error: function (error) {
-            console.log(error);
-        }
-    });
-    $.ajax({
-        url: (`http://127.0.0.1:5000/post/repost/button/${postId}/`),
-        type: 'GET',
-        contentType: 'application/json',
-        success: function (response) {
-            if (response !== "null"){
-                document.getElementById("repost-button").innerHTML = response
-            }
-        },
+                this.reposts = response.length
+                for (const element of document.getElementsByClassName(`repost-count-${postId}`)){
+                    element.innerHTML = response.length
+                }
+            }},
         error: function (error) {
             console.log(error);
         }
     });
 }
 
-function repostPost(){
+function repostPost(postId){
     $.ajax({
-        url: (`http://127.0.0.1:5000/post/repost/${postId}/`),
+        url: (`${config.host}/post/repost/${postId}/`),
         type: 'POST',
         contentType: 'application/json',
         success: function (response) {
-            if (response !== "null"){
-                document.getElementById("repost-button").innerHTML = response
-                getReposts()
+            if (response !== "null") {
+                for (const element of document.getElementsByClassName(`repost-button-${postId}`)) {
+                    element.innerHTML = response
+                }
+                getReposts(postId)
             }
         },
         error: function (error) {
@@ -136,19 +91,22 @@ function repostPost(){
     });
 }
 
-function unrepostPost(){
+function unrepostPost(postId){
     $.ajax({
-        url: (`http://127.0.0.1:5000/post/repost/${postId}/`),
+        url: (`${config.host}/post/repost/${postId}/`),
         type: 'DELETE',
         contentType: 'application/json',
         success: function (response) {
             if (response !== "null"){
-                document.getElementById("repost-button").innerHTML = response
-                getReposts()
-            }
-        },
+                for (const element of document.getElementsByClassName(`repost-button-${postId}`)) {
+                    element.innerHTML = response
+                }
+                getReposts(postId)
+            }},
         error: function (error) {
             console.log(error);
         }
     });
 }
+
+

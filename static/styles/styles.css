@@ -1,0 +1,22 @@
+body{
+    background-color: forestgreen!important;
+}
+
+button{
+    background-color: darkgreen;
+    border-color: darkgreen;
+}
+
+.post{
+    background-color: #176017;
+
+    margin: 2px;
+}
+.post-list{
+    width: 50%;
+    background-color: #497829;
+}
+
+.container{
+    width: 50%;
+}
