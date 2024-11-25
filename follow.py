@@ -52,8 +52,22 @@ def getFollowButton(followeeId=None):
     else:
         return "null"
 
+#   returns the userId's of all accounts that are followed by a user currently logged in
+def getFolloweeIdsForUser():
+    userIds = []
+    if (checkSession()):
+        db = get_db()
+        for uId in db.cursor().execute("SELECT followee_id FROM Follow WHERE follower_id=?", (session['id'])):
+            userIds.append(uId[0])
+    return userIds
+
+
+
+
 def isFollowing(followeeId):
     db = get_db()
+    if (checkSession() == False):
+        return False
     for row in db.cursor().execute("SELECT * FROM Follow WHERE follower_id=? AND followee_id=?",(session["id"], followeeId)):
         return True
     return False

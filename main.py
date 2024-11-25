@@ -1,7 +1,8 @@
-from flask import Flask, session, render_template, Blueprint
+from flask import Flask, session, render_template, Blueprint, redirect
 
 from createpost import initCreatePost, createPostApi
 from database import get_db
+from feed import feedApi
 from follow import followApi
 from login import initLogin, loginApi
 from post import Post, postApi
@@ -18,6 +19,7 @@ app.register_blueprint(createPostApi)
 app.register_blueprint(loginApi)
 app.register_blueprint(registerApi)
 app.register_blueprint(postListApi)
+app.register_blueprint(feedApi)
 
 @app.route("/")
 def root():
@@ -31,7 +33,7 @@ def root():
 def logout():
     session.pop('id', None)
     session.pop('role', None)
-
+    return redirect('/login/')
 
 
 if __name__ == "__main__":
