@@ -12,9 +12,7 @@ class User:
 
 def getUserFromSql(sql):
     for u in sql:
-        print(u)
         user = User(u[0], u[1], u[3], u[4])
-        print(str(u))
         return user
     return None
 

@@ -31,7 +31,7 @@ CREATE TABLE Report(
 	reported_id INTEGER NOT NULL,
 	reporter_id INTEGER NOT NULL,
 	sorted BOOLEAN NOT NULL,
-	date_and_time DATETIME NOT NULL
+	date_and_time TIMESTAMP NOT NULL
 );
 
 DROP TABLE IF EXISTS Notification;

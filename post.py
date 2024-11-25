@@ -37,7 +37,6 @@ def getPostFromSql(sql):
             rpsql = db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [post.repostId])
             for rp in rpsql:
                 repost = Post(rp[0], rp[1], rp[2], rp[3], rp[5], rp[6], post.userId)
-                print(str(repost.repostedPost))
                 return repost
     return None
 

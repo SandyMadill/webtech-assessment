@@ -1,11 +1,11 @@
 let lastDate
+let loading = true
+let stopLoading = false
 function initPostList(posts, ld){
 
     lastDate = ld
-    console.log(lastDate)
     insertPosts(posts)
     observer.observe(document.querySelector(".end"))
-
 }
 
 function insertPosts(posts){
@@ -13,6 +13,7 @@ function insertPosts(posts){
         post = document.createElement("div")
         post.innerHTML = posts[i]
         document.getElementById("post-list").innerHTML+=posts[i]
+        loading=false
     }
 }
 
@@ -34,14 +35,18 @@ const callBack = (entries) => {
 };
 
  document.addEventListener("scroll", function(){
-     console.log(lastDate)
-     if(isVisible){
+     if(isVisible && stopLoading === false && loading === false){
+         loading = true
          $.ajax({
         url: (`${config.host}/post-list/${lastDate}/desc`),
         type: 'GET',
         contentType: 'application/json',
         success: function(response) {
-            print(response)
+            initPostList(response[0])
+            lastDate=response[1]
+            if (response[0].length < 10){
+                stopLoading = true
+            }
         },
         error: function(error) {
             console.log(error);
@@ -49,5 +54,28 @@ const callBack = (entries) => {
     });
      }
  });
+
+ function loadPosts(){
+     console.log(lastDate)
+     if(isVisible && stopLoading === false){
+         $.ajax({
+        url: (`${config.host}/post-list/${lastDate}/desc`),
+        type: 'GET',
+        contentType: 'application/json',
+        success: function(response) {
+            initPostList(response[0])
+            lastDate=response[1]
+            console.log(response[0].length)
+            console.log(lastDate)
+            if (response[0].length < 10){
+                stopLoading = true
+            }
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
+     }
+ }
 
  const observer = new IntersectionObserver(callBack,options);
