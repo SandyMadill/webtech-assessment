@@ -1,8 +1,9 @@
 let lastDate
 let loading = true
 let stopLoading = false
-function initPostList(posts, ld){
-
+let where
+function initPostList(posts, ld, args){
+    where = args
     lastDate = ld
     insertPosts(posts)
     observer.observe(document.querySelector(".end"))
@@ -38,11 +39,11 @@ const callBack = (entries) => {
      if(isVisible && stopLoading === false && loading === false){
          loading = true
          $.ajax({
-        url: (`${config.host}/post-list/${lastDate}/desc`),
-        type: 'GET',
-        contentType: 'application/json',
+            url: (`${config.host}/post-list/${JSON.stringify(where)}/desc/${lastDate}/`),
+            type: 'GET',
+            contentType: 'application/json',
         success: function(response) {
-            initPostList(response[0])
+            insertPosts(response[0])
             lastDate=response[1]
             if (response[0].length < 10){
                 stopLoading = true
@@ -55,27 +56,5 @@ const callBack = (entries) => {
      }
  });
 
- function loadPosts(){
-     console.log(lastDate)
-     if(isVisible && stopLoading === false){
-         $.ajax({
-        url: (`${config.host}/post-list/${lastDate}/desc`),
-        type: 'GET',
-        contentType: 'application/json',
-        success: function(response) {
-            initPostList(response[0])
-            lastDate=response[1]
-            console.log(response[0].length)
-            console.log(lastDate)
-            if (response[0].length < 10){
-                stopLoading = true
-            }
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    });
-     }
- }
 
  const observer = new IntersectionObserver(callBack,options);
