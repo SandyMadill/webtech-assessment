@@ -21,18 +21,18 @@ def getFeed():
     for followee in followees:
         where.append(["user_id",followee])
     posts = (getPostList(where,"desc",str(datetime.datetime.now())))
-    return render_template("feed.html", posts=posts[0], lastDate=posts[1], userSession = getSession(), where=where)
+    return render_template("index.html", page="feed", posts=posts[0], lastDate=posts[1], userSession = getSession(), where=where)
 
 @postListApi.route('/discover', methods=['GET'])
 def getDiscoverFeed():
     posts = getPostList([],"desc",str(datetime.datetime.now()))
-    return render_template("feed.html", posts=posts[0], lastDate=posts[1], userSession = getSession(), where=[])
+    return render_template("index.html", page="feed", posts=posts[0], lastDate=posts[1], userSession = getSession(), where=[])
 
 @postListApi.route('/profile/<userId>', methods=['GET'])
 def getProfile(userId=None):
     posts = getPostList([["user_id",userId]],"desc",str(datetime.datetime.now()))
     user = getUser(userId)
-    return render_template("profile.html", posts=posts[0], lastDate=posts[1], user=user, session=getSession(), where=[["user_id",userId]])
+    return render_template("index.html", page="profile", posts=posts[0], lastDate=posts[1], user=user, session=getSession(), where=[["user_id",userId]])
 
 
 @postListApi.route('/post-list/<where>/<ord>/<afterDate>/', methods=['GET'])

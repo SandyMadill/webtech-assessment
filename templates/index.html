@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+    <title>{{ pageTitle }}</title>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        {% if page=='login' %}
+            {% include 'login.html' %}
+        {% endif %}
+        {% if page=='register' %}
+            {% include 'register.html' %}
+        {% endif %}
+        {% if page=='feed' %}
+            {% include 'feed.html' %}
+        {% endif %}
+        {% if page=='post' %}
+            {% include 'post.html' %}
+        {% endif %}
+        {% if page=='profile' %}
+            {% include 'profile.html' %}
+        {% endif %}
+    </div>
+</body>

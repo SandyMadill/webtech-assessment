@@ -27,8 +27,6 @@ const options={
     root: container,
     threshold: 1,
     rootMargin: '20% 0% 20% 0%',
-
-
 }
 
 const callBack = (entries) => {

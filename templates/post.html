@@ -6,14 +6,14 @@
 <script src="{{url_for('static', filename='follow.js')}}"></script>
 <script src="{{url_for('static', filename='config.js')}}"></script>
 <body>
-    <div class="post">
+    <div class="container">
         <div class="row">
             <div id="repost" class="col"></div>
         </div>
         <div class="row">
             <div class="col">
-                {{user.displayName}}<br>
-                {{user.username}}
+                <a href="profile/{{ user.userId }}">{{user.displayName}}</a><br>
+                <a href="profile/{{ user.userId }}">@{{user.username}}</a>
             </div>
             {% if userSession != None and userSession.user_id != post.userId %}
             <div class="col">
@@ -30,11 +30,6 @@
         <div class="row">
             <div class="col">
                 {{post.postText}}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                {{ post.dateAndTime }}
             </div>
         </div>
         <div class="row">

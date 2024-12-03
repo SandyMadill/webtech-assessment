@@ -28,6 +28,6 @@ def initReg():
             db.cursor().execute("INSERT INTO User(username, password, display_name, role, banned) VALUES(?,?,?,'user',false)", (username, passHash, displayName));
 
             db.commit();
-        return render_template('register.html')
+        return render_template('index.html', page="register", pageTitle="register")
     else:
         return "Already Logged In"

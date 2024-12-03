@@ -7,6 +7,8 @@ from login import initLogin, loginApi
 from post import Post, postApi
 from postlist import postListApi
 from register import initReg, registerApi
+from usersession import getSession
+
 app = Flask(__name__)
 app.secret_key = 'fkgjdflg£$5;"!4$^&RTH42£$%'
 
@@ -19,11 +21,10 @@ app.register_blueprint(postListApi)
 
 @app.route("/")
 def root():
-    users = []
-    db = get_db();
-    for row in db.cursor().execute("SELECT rowid, * FROM Post"):
-        users.append(str(row))
-    return users
+    if (getSession() != None):
+        return redirect('feed')
+    else:
+        return redirect('discover')
 
 @app.route("/logout/")
 def logout():

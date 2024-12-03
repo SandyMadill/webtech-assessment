@@ -22,6 +22,6 @@ def initLogin():
                     session['id'] = str(row[0])
                     session['role'] = str(row[3])
                     print(session['id'])
-        return render_template('login.html')
+        return render_template('index.html', page='login', pageTitle='Login')
     else:
         return "Already Logged In"
