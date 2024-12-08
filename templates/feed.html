@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 
 <body>
-<div class="container">
-{% if userSession != None %}
-    {% include 'create-post.html' %}
-{% endif %}
-{% include 'post-list.html' %}
-</div>
+    {% if userSession != None %}
+        {% include 'create-post.html' %}
+    {% endif %}
+    {% include 'post-list.html' %}
 </body>

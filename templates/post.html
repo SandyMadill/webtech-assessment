@@ -1,67 +1,80 @@
 <!DOCTYPE html>
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/styles.css')}}">
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet"/>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="{{url_for('static', filename='post.js')}}"></script>
-<script src="{{url_for('static', filename='follow.js')}}"></script>
-<script src="{{url_for('static', filename='config.js')}}"></script>
 <body>
-    <div class="container">
-        <div class="row">
-            <div id="repost" class="col"></div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <a href="profile/{{ user.userId }}">{{user.displayName}}</a><br>
-                <a href="profile/{{ user.userId }}">@{{user.username}}</a>
+    <div class="post">
+        {% if rpUser != None %}
+                <div id="repost" class="col">{{ rpUser.displayName }} Reposted</div>
+        {% endif %}
+            <div class="pfp">
+                <div class="pfp-{{ user.userId }}"></div>
+                {% if os.path.exists('./static/pfp/'+  user.userId|string + '/40x40.csv') %}
+                    <img src="{{ url_for('static', filename='img/pfp/'+user.userId|string +"/40x40.jpg") }}" alt="pfp">
+                {% else %}
+                    <img src="{{ url_for('static', filename='img/pfp/default/40x40.jpg')}}" alt="pfp">
+                {% endif %}
+                <br>
+                <div class="thread-line"></div>
             </div>
-            {% if userSession != None and userSession.user_id != post.userId %}
-            <div class="col">
-                <div class="follow-button-{{ user.userId }}">
-                    {% if following %}
-                        {% include 'unfollowbutton.html' %}
-                    {% elif not following %}
-                        {% include 'followbutton.html' %}
+            <div class="rest-of-post">
+                <div class="user">
+                    <display class="user-details">
+                        <a class="displayName" href="/profile/{{ user.userId }}/">{{user.displayName}}</a><br>
+                        <a class="username" href="/profile/{{ user.userId }}/">@{{user.username}}</a>
+                    </display>
+
+                    {% if userSession != None and userSession.user_id != post.userId %}
+                        <div class="user-buttons">
+                            <div class="follow-button-{{ user.userId }}">
+                                {% if following %}
+                                    {% include 'unfollowbutton.html' %}
+                                {% elif not following %}
+                                    {% include 'followbutton.html' %}
+                                {% endif %}
+                            </div>
+                        </div>
                     {% endif %}
                 </div>
+            <div class="content">
+                <div class="text">
+                    {{post.postText}}
+                </div>
+                <div class="image">
+                    {% if post.hasImages %}
+                            <img src="{{ url_for('static', filename='img/post-img/'+post.postId|string +'/img.jpg') }}" alt="post image">
+                    {% endif %}
+                </div>
+
             </div>
-            {% endif %}
-        </div>
-        <div class="row">
-            <div class="col">
-                {{post.postText}}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                Likes: <lc class="like-count-{{ post.postId }}"> {{ post.likeCount }}</lc>
-            </div>
-            <div class="col">
-                Reposts: <rc class="repost-count-{{ post.postId }}">{{ post.repostCount }}</rc>
-                {{ post.likedPost }}
-            </div>
-        </div>
-        {% if userSession != None %}
             <div class="row">
                 <div class="col">
-                    <div class="like-button-{{ post.postId }}">
-                        {% if post.likesPost %}
-                            {% include 'unlike-button.html' %}
-                        {% else %}
-                            {% include 'like-button.html' %}
-                        {% endif %}
-                    </div>
+                    Likes: <lc class="like-count-{{ post.postId }}"> {{ post.likeCount }}</lc>
                 </div>
                 <div class="col">
-                    <div class="repost-button-{{ post.postId }}">
-                        {% if post.repostedPost %}
-                            {% include 'unrepost-button.html' %}
-                        {% else %}
-                            {% include 'repost-button.html' %}
-                        {% endif %}
-                    </div>
+                    Reposts: <rc class="repost-count-{{ post.postId }}">{{ post.repostCount }}</rc>
+                    {{ post.likedPost }}
                 </div>
             </div>
-        {% endif %}
-    </div>
+                {% if userSession != None %}
+                    <div class="row">
+                        <div class="col">
+                            <div class="like-button-{{ post.postId }}">
+                                {% if post.likesPost %}
+                                    {% include 'unlike-button.html' %}
+                                {% else %}
+                                    {% include 'like-button.html' %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="repost-button-{{ post.postId }}">
+                                {% if post.repostedPost %}
+                                    {% include 'unrepost-button.html' %}
+                                {% else %}
+                                    {% include 'repost-button.html' %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
 </body>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, Blueprint
+from flask import Flask, render_template, request, Blueprint, redirect
 from database import get_db
 import bcrypt
 
@@ -28,6 +28,6 @@ def initReg():
             db.cursor().execute("INSERT INTO User(username, password, display_name, role, banned) VALUES(?,?,?,'user',false)", (username, passHash, displayName));
 
             db.commit();
-        return render_template('index.html', page="register", pageTitle="register")
+        return render_template('index.html', page="register", pageTitle="register", userSession=None)
     else:
-        return "Already Logged In"
+        return redirect('/feed/')

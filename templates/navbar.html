@@ -3,16 +3,21 @@
     <head>
         <meta charset="UTF-8">
         <title>Navbar</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles/flex2.css') }}">
     </head>
 <body>
-    <ul class = "navigation">
-        <li class="title">GREEN GROUND</li>
-        <li><a href="/feed/">Feed</a></li>
-        <li><a href="/discover/">Discover</a></li>
-        <li><a href="/profile/">profile</a></li>
-        <li><a href="#">Notifications</a></li>
-        <li><a href="/logout/">Log Out</a></li>
-    </ul>
+    <div class = "sidenav">
+        <div class="title">GREEN GROUND</div>
+        {% if userSession != None %}
+            <a href="/feed/">Feed</a>
+            <a href="/discover/">Discover</a>
+            <a href="/profile/{{ userSession.user_id }}">Profile</a>
+            <a href="#">Notifications</a>
+            <a href="/logout/">Log Out</a>
+        {% else %}
+            <a href="/discover/">Discover</a>
+            <a href="/login/">Log In</a>
+            <a href="/register/">Register</a>
+        {% endif %}
+    </div>
 </body>
 </html>

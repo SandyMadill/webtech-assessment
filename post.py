@@ -9,6 +9,7 @@ from usersession import getSession
 
 postApi = Blueprint('post-api', __name__, template_folder='templates')
 
+# contains the necessary properties of a post
 class Post:
     def __init__(self, postId, userId, postText, hasImages, dateAndTime, replyId, repostId):
         self.postId = postId
@@ -20,13 +21,14 @@ class Post:
         self.repostId = repostId
         self.likeCount = len(getLikes(postId))
         self.repostCount = len(getReposts(postId))
-        self.likesPost = None
-        self.repostedPost = None
+        self.likesPost = None                       #   contains if the logged in user has liked the post
+        self.repostedPost = None                    #   contains if the logged in user has reposted the post
         if (checkSession()):
             self.likesPost = likesPost(postId)
             self.repostedPost = repostedPost(postId)
 
 
+#converts a basic select * from post sql statement and converts it into an instance of the post object
 def getPostFromSql(sql):
     for p in sql:
         post = Post(p[0], p[1], p[2], p[3], p[5], p[6], p[4])
@@ -40,7 +42,7 @@ def getPostFromSql(sql):
                 return repost
     return None
 
-@postApi.route("/post/<postId>/")
+
 def getPost(postId=None):
     db = get_db()
     post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
@@ -53,6 +55,42 @@ def getPost(postId=None):
         user = getUser(post.userId)
         rpUser = getUser(post.repostId)
         return render_template("post.html", post=post, user=user, rpUser=rpUser, userSession=getSession(), following = isFollowing(post.userId))
+
+# Will get the post from the id in the perameter, then if the post retrieved has a reply id it will retrieve the post that the replid belongs to
+# this process will repeat untill it retrieves a post that does not have a reply id
+# will return an array containing every post rendered with the post.html template
+@postApi.route('/post/thread/<postId>/')
+def getThread(postId=None):
+    print(postId)
+
+    # get the selected post
+    db = get_db()
+    post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
+
+    # if this post is not a reply then return a tuple containing the post id and the rendered post
+    # if the post is a reply then return it with an array containing the other posts in the thread before it
+    if post.replyId == None:
+        return [[post.postId, getPost(post.postId)]]
+    else:
+        threadArray = getThread(post.replyId)
+        threadArray.append([post.postId, getPost(post.postId)])
+        return threadArray
+
+
+
+@postApi.route("/post/<postId>/")
+def renderPost(postId=None):
+    db = get_db()
+    post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
+
+    if (post.repostId == None):
+        user = getUser(post.userId)
+        return render_template("index.html", page="post", post=post, user=user, rpUser=None, userSession=getSession(), following = isFollowing(post.userId))
+    else:
+        user = getUser(post.userId)
+        rpUser = getUser(post.repostId)
+        return render_template("index.html", page="post", post=post, user=user, rpUser=rpUser, userSession=getSession(), following = isFollowing(post.userId))
+
 
 @postApi.route('/post/like/<postId>/')
 def getLikes(postId=None):

@@ -1,8 +1,9 @@
-from flask import render_template, request, session, Blueprint
+from flask import render_template, request, session, Blueprint, redirect
 from database import get_db
 import bcrypt
 
 from user import checkSession
+from usersession import getSession
 
 loginApi = Blueprint('login-api', __name__, template_folder='templates')
 
@@ -22,6 +23,6 @@ def initLogin():
                     session['id'] = str(row[0])
                     session['role'] = str(row[3])
                     print(session['id'])
-        return render_template('index.html', page='login', pageTitle='Login')
+        return render_template('index.html', page='login', pageTitle='Login', userSession=None)
     else:
-        return "Already Logged In"
+        return redirect('/feed/')

@@ -1,8 +1,11 @@
 <html>
         <body>
-                <form action="" method="post" name="form">
-			<textarea name="text" id="text"></textarea><br>
-                        <input type="submit" name="submit" id="submit"/>
+                <form method="post" id="create-post">
+                    {% if page=='post' %}
+                        <input type="hidden" id="replyId" name="replyId" value="{{ post.postId }}">
+                    {% endif %}
+                    <textarea name="text" id="text"></textarea><br>
+                    <button type="submit">Post</button>
                 </form>
         </body>
 </html>
