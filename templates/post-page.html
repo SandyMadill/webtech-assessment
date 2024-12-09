@@ -1,8 +1,10 @@
-<body onload="initPage({{ post.postId }}, {{ post.replyId }})">
+<body onload="initPage({{ post.postId }}, '{{ post.replyId }}')">
     {% if post.replyId != None %}
         <div id="thread" class="thread"></div>
     {% endif %}
+    <div id="post-page" class="post-page">
     {% include 'post.html' %}
     {% include 'create-post.html' %}
     {% include 'post-list.html' %}
+    </div>
 </body>

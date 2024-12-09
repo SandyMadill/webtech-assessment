@@ -1,13 +1,17 @@
 //  when a post's page is loaded
+
 function initPage(postId, replyId){
+    container1 = document.querySelector(".core");
+    container1.addEventListener("scroll", (event) => {
+        console.log(`scrollTop: ${container1.scrollTop}`);
+    });
     //  load replies
     getReplies(postId)
 
     //  if this post is part of a thread retrieve the posts that come before it in the thread and display them above the selected post
-    if (replyId != undefined){
+    if (replyId != "None"){
         getThread(replyId)
     }
-
 }
 
 //  retrieves the posts that come before the selected post in the thread
@@ -33,7 +37,10 @@ function getThread(postId){
                 //  insert hte post template into the thread
                 post.innerHTML = response[i][1]
                 document.getElementById("thread").appendChild(post)
+                console.log(document.body.scrollTop)
             }
+            //  set the scroll position to the selected post
+            window.scrollTo(0, document.getElementById("post-page").getBoundingClientRect().top);
             },
         error: function(error) {
             console.log(error);
@@ -41,6 +48,11 @@ function getThread(postId){
     });
 
 }
+
+
+
+
+
 
 
 //  retrives all of the replies to the selected post and displays them in the reply section

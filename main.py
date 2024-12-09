@@ -1,7 +1,7 @@
 from flask import Flask, session, redirect, send_from_directory
-from createpost import createPostApi
 from follow import followApi
 from login import loginApi
+from notifications import notificationApi
 from post import postApi
 from postlist import postListApi
 from register import registerApi
@@ -18,11 +18,11 @@ def handle_context():
     return dict(os=os)
 app.register_blueprint(postApi)
 app.register_blueprint(followApi)
-app.register_blueprint(createPostApi)
 app.register_blueprint(loginApi)
 app.register_blueprint(registerApi)
 app.register_blueprint(postListApi)
 app.register_blueprint(imageApi)
+app.register_blueprint(notificationApi)
 
 @app.route("/")
 def root():

@@ -1,9 +1,9 @@
 import datetime
 from crypt import methods
-from config import config
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, request
 from database import get_db
 from follow import isFollowing
+from notifications import makeNotification, deleteNotification
 from user import User, checkSession, getUserFromSql, getUser
 from usersession import getSession
 
@@ -42,6 +42,11 @@ def getPostFromSql(sql):
                 return repost
     return None
 
+#returns the post as a post object
+def getPostById(postId):
+    db = get_db()
+    return getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
+
 
 def getPost(postId=None):
     db = get_db()
@@ -61,8 +66,6 @@ def getPost(postId=None):
 # will return an array containing every post rendered with the post.html template
 @postApi.route('/post/thread/<postId>/')
 def getThread(postId=None):
-    print(postId)
-
     # get the selected post
     db = get_db()
     post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
@@ -76,13 +79,32 @@ def getThread(postId=None):
         threadArray.append([post.postId, getPost(post.postId)])
         return threadArray
 
+@postApi.route("/create-post/", methods=['POST','GET'])
+def createPost():
+    if (checkSession()):
+        db = get_db()
+        if (request.method == 'POST'):
+            userId = session['id']
+            try:
+                replyId = request.form['replyId']
+            except:
+                replyId = None
+            text = request.form['text']
+            sql = db.cursor().execute("INSERT INTO Post(user_id, post_text, has_images, date_and_time, reply_id) VALUES(?,?,false,?,?) RETURNING post_id as post_id", (userId, text, datetime.datetime.now(), replyId)).fetchone()
+            db.commit()
+            if (replyId != None):
+                for s in sql:
+                    postId = s
+                    makeNotification(getPostById(replyId).userId, int(session['id']), postId, "reply")
 
+            return "posted successfully"
+    else:
+        return ""
 
 @postApi.route("/post/<postId>/")
 def renderPost(postId=None):
     db = get_db()
     post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
-
     if (post.repostId == None):
         user = getUser(post.userId)
         return render_template("index.html", page="post", post=post, user=user, rpUser=None, userSession=getSession(), following = isFollowing(post.userId))
@@ -117,8 +139,11 @@ def likePost(postId=None):
     if checkSession():
         db = get_db()
         if likesPost(postId) == False:
-            db.cursor().execute("INSERT INTO Likes(post_id, user_id) VALUES(?,?)", (postId, session['id']))
+            db.cursor().execute("INSERT INTO Likes(post_id, user_id) VALUES(?,?)", (postId, [session['id']]))
             db.commit()
+
+            makeNotification(getPostById(postId).userId, int(session['id']), postId, "like")
+
             return getLikeButton(postId)
         else:
             return "null"
@@ -132,6 +157,8 @@ def unlikePost(postId=None):
         if likesPost(postId):
             db.cursor().execute("DELETE FROM Likes WHERE post_id=? AND user_id=?", (postId, session['id']))
             db.commit()
+
+            deleteNotification(getPostById(postId).userId, int(session['id']), postId, "like")
 
             return getLikeButton(postId)
         else:
@@ -166,6 +193,9 @@ def repost(postId=None):
         if repostedPost(postId) == False:
             db.cursor().execute("INSERT INTO Post(repost_id, user_id, date_and_time) VALUES(?,?,?)", (postId, session['id'], datetime.datetime.now()))
             db.commit()
+
+            makeNotification(getPostById(postId).userId, int(session['id']), postId, "repost")
+
             return getRepostButton(postId)
         else:
             return "null"
@@ -179,6 +209,9 @@ def unrepost(postId=None):
         if repostedPost(postId):
             db.cursor().execute("DELETE FROM Post WHERE repost_id=? AND user_id=?", (postId, session['id']))
             db.commit()
+
+            deleteNotification(getPostById(postId).userId, int(session['id']), postId, "repost")
+
             return getRepostButton(postId)
         else:
             return "null"

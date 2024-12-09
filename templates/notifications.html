@@ -1,0 +1,9 @@
+<body onload="initNotifications({{ oldNotifications }}, {{ newNotifications }})">
+    <div class="tabs" id="old-new">
+        <div class="tab" id="new-tab" selected="true" onclick="loadNew()" >New</div>
+        <div class="tab" id="old-tab" selected="false" onclick="loadOld()">Old</div>
+    </div>
+    <div id="notifications" class="notifications">
+
+    </div>
+</body>

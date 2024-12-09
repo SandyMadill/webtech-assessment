@@ -41,7 +41,7 @@ function insertPosts(posts){
 //  unless the last batch loaded has recieved less than 10 posts indicating that it was the last batch
 let isVisible = null;
 
-const container = document.querySelector(".container");
+const container = document.querySelector(".core");
 
 const options={
     root: container,

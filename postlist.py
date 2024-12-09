@@ -5,7 +5,6 @@ from Xlib.ext.randr import PROPERTY_CLONE_LIST
 from click import DateTime
 from flask import Flask, Blueprint, render_template, logging, request, redirect
 
-from config import config
 from database import get_db
 from follow import getFolloweeIdsForUser
 from post import getPostFromSql, getPost

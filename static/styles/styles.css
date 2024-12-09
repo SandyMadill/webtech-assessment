@@ -24,6 +24,10 @@ button{
 
 }
 
+.post-page{
+    min-height: 100vh;
+}
+
 .post{
     border-bottom: #4e873e;
     border-bottom-style: dashed;
@@ -70,6 +74,38 @@ button{
     }
 }
 
+.notification{
+    border-bottom: #4e873e;
+    border-bottom-style: dashed;
+    padding: 10px 15px 10px 15px;
+    display: flex;
+    flex-direction: row;
+
+    img{
+        width: inherit;
+    }
+    .pfp {
+        margin-right: 15px;
+        float: left;
+        width: fit-content;
+    }
+    .rest-of-notification{
+        width: 100%;
+        float:none;
+        overflow: hidden;
+    }
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}
+
+.notification:hover {
+        cursor: pointer;
+        background-color: #549343;
+    }
+
 .thread{
     .post{
         border-bottom:none;
@@ -99,11 +135,11 @@ button{
 
 .sidenav {
     height: 100%;
-    width: 30%; /* Set the width of the sidebar */
-    position: fixed; /* Fixed Sidebar (stay in place on scroll) */
-    top: 0; /* Stay at the top */
+    width: 30%;
+    position: fixed;
+    top: 0;
     left: 0;
-    overflow-x: hidden; /* Disable horizontal scroll */
+    overflow-x: hidden;
     padding-top: 20px;
 
     a {
@@ -120,3 +156,22 @@ button{
 }
 
 
+.tabs{
+    display: flex;
+    justify-content:center;
+    padding: 0% 15%;
+    .tab{
+        margin: 0 5px;
+        padding: 5% 15%;
+        border-bottom: #8e8e8e 4px solid;
+    }
+
+    .tab:hover {
+        cursor: pointer;
+        background-color: #549343;
+    }
+
+    .tab[selected="true"] {
+        border-color: #4e873e;
+    }
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<body>
+    <div class="notification" onclick="notificationClicked('{{ notification.action }}', {{ user.userId }}, '{{ notification.postId }}')">
+            <div class="pfp">
+                <div class="pfp-{{ user.userId }}"></div>
+                {% if os.path.exists('./static/pfp/'+  user.userId|string + '/40x40.csv') %}
+                    <img src="{{ url_for('static', filename='img/pfp/'+user.userId|string +"/40x40.jpg") }}" alt="pfp">
+                {% else %}
+                    <img src="{{ url_for('static', filename='img/pfp/default/40x40.jpg')}}" alt="pfp">
+                {% endif %}
+            </div>
+            <div class="rest-of-notification">
+                {% if notification.action == "reply" %}
+                    {{ user.username }} replied to one of your posts:
+                    <p>{{ postText }}</p>
+                {% elif notification.action == "like" %}
+                    {{ user.username }} liked your post:
+                    <p>{{ postText }}</p>
+                {% elif notification.action == "repost" %}
+                    {{ user.username }} reposted your post:
+                    <p>{{ postText }}</p>
+                {% elif notification.action == "follow" %}
+                    {{ user.username }} followed you.
+                {% endif %}
+            </div>
+        </div>
+</body>

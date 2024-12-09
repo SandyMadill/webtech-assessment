@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <body>
     <div class="post">
-        {% if rpUser != None %}
-                <div id="repost" class="col">{{ rpUser.displayName }} Reposted</div>
-        {% endif %}
             <div class="pfp">
+                {% if rpUser != None %}
+                    <br>
+                {% endif %}
                 <div class="pfp-{{ user.userId }}"></div>
                 {% if os.path.exists('./static/pfp/'+  user.userId|string + '/40x40.csv') %}
                     <img src="{{ url_for('static', filename='img/pfp/'+user.userId|string +"/40x40.jpg") }}" alt="pfp">
@@ -15,6 +15,9 @@
                 <div class="thread-line"></div>
             </div>
             <div class="rest-of-post">
+                {% if rpUser != None %}
+                    <div id="repost" class="col">{{ rpUser.displayName }} Reposted</div>
+                {% endif %}
                 <div class="user">
                     <display class="user-details">
                         <a class="displayName" href="/profile/{{ user.userId }}/">{{user.displayName}}</a><br>
