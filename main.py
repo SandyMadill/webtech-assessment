@@ -1,5 +1,6 @@
 from flask import Flask, session, redirect, send_from_directory
 
+from config import getKey
 from report import reportApi
 from follow import followApi
 from login import loginApi
@@ -12,7 +13,7 @@ from usersession import getSession
 import os
 
 app = Flask(__name__)
-app.secret_key = 'fkgjdflg£$5;"!4$^&RTH42£$%'
+app.secret_key = getKey()
 
 
 @app.context_processor

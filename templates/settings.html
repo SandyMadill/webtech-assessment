@@ -1,6 +1,6 @@
 <h4>Your Profile Picture:</h4><br>
-{% if os.path.exists('./static/pfp/'+  userSession.userId|string + '/40x40.csv') %}
-        <img src="{{ url_for('static', filename='img/pfp/'+userSession.userId|string +"/400x400.jpg") }}" alt="pfp">
+{% if os.path.exists('./static/img/pfp/'+  user.userId|string + '/') %}
+        <img src="{{ url_for('static', filename='img/pfp/'+user.userId|string +"/400x400.jpg") }}" alt="pfp">
     {% else %}
         <img src="{{ url_for('static', filename='img/pfp/default/400x400.jpg')}}" alt="pfp">
 {% endif %}
@@ -9,11 +9,29 @@
     <button type="submit">Update Profile picture</button>
 </form>
 <br>
-Your username: {{ user.username }}
-<form method="post" class="change-username" id="chang-username" enctype="multipart/form-data">
+Your username: <field id="un">{{ user.username }}</field>
+<form method="post" class="change-username" id="change-username">
     <input type="text" name="username">
     <button type="submit">Update Username</button>
 </form>
+<div id="username-error"></div>
+<br>
+Your display name: <field id="dn">{{ user.displayName }}</field>
+<form method="post" class="change-display-name" id="change-display-name">
+    <input type="text" name="displayname">
+    <button type="submit">Update Display Name</button>
+</form>
+<br>
+Change Your Password
+<form method="post" class="change-password" id="change-password">
+    <label for="old-password">Enter your old password</label>
+    <input type="password" name="old-password">
+    <br>
+    <label for="password">Enter your new password</label>
+    <input type="password" name="password">
+    <button type="submit">Update Password</button>
+</form>
+<div id="password-error"></div>
 
 <script>
 
@@ -32,7 +50,72 @@ Your username: {{ user.username }}
                 url:'/settings/pfp/',
                 data: formData,
                 success:function(response){
+                    console.log(response)
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+        });
 
+    });
+
+
+    $(document).on('submit','#change-username',function(e)
+    {
+        //  this blocks the normal procedure for when a post is submitted (the page gets reloaded as a post request)
+        e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                type:'PUT',
+                url:'/settings/username/',
+                data: formData,
+                success:function(response){
+                    document.getElementById("username-error").innerHTML=""
+                    document.getElementById("un").innerHTML = response
+                },
+                error: function(error) {
+                    document.getElementById("username-error").innerHTML="This Username has already been taken"
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+        });
+
+    });
+
+    $(document).on('submit','#change-password',function(e)
+    {
+        //  this blocks the normal procedure for when a post is submitted (the page gets reloaded as a post request)
+        e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                type:'PUT',
+                url:'/settings/password/',
+                data: formData,
+                success:function(response){
+                    document.getElementById("password-error").innerHTML="Password Updated!"
+                },
+                error: function(error) {
+                    document.getElementById("password-error").innerHTML="Incorrect Old Password"
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+        });
+
+    });
+
+    $(document).on('submit','#change-display-name',function(e)
+    {
+        //  this blocks the normal procedure for when a post is submitted (the page gets reloaded as a post request)
+        e.preventDefault();
+            var formData = new FormData(this);
+            $.ajax({
+                type:'PUT',
+                url:'/settings/display-name/',
+                data: formData,
+                success:function(response){
+                    document.getElementById("dn").innerHTML = response
                 },
                 cache: false,
                 contentType: false,
