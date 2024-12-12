@@ -29,7 +29,7 @@ def updatePfp():
         os.mkdir('./static/img/pfp/' + str(userSession.user_id))
         l.save('./static/img/pfp/'+str(userSession.user_id)+'/400x400.jpg/')
         s.save('./static/img/pfp/' + str(userSession.user_id) + '/40x40.jpg/')
-        return l
+        return "image uploaded"
 
 @settingsApi.route('/settings/username/', methods=['PUT'])
 def updateUsername():
