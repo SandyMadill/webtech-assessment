@@ -19,15 +19,15 @@ def initReg():
 
             passHash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-            print(passHash)
-            print(passHash == bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()))
 
 
-
-
-            db.cursor().execute("INSERT INTO User(username, password, display_name, role, banned) VALUES(?,?,?,'user',false)", (username, passHash, displayName));
-
-            db.commit();
+            try:
+                db.cursor().execute("INSERT INTO User(username, password, display_name, role, banned) VALUES(?,?,?,'user',false)", (username, passHash, displayName));
+                db.commit();
+            except Exception as e:
+                db.commit()
+                raise Exception("Username already taken")
+            return redirect('/login/')
         return render_template('index.html', page="register", pageTitle="register", userSession=None)
     else:
         return redirect('/feed/')

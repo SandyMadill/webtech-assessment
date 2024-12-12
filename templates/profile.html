@@ -1,5 +1,5 @@
 <div class="image">
-    {% if os.path.exists('./static/pfp/'+  user.userId|string + '/40x40.csv') %}
+    {% if os.path.exists('./static/img/pfp/'+  user.userId|string + '/') %}
         <img src="{{ url_for('static', filename='img/pfp/'+user.userId|string +"/400x400.jpg") }}" alt="pfp">
     {% else %}
         <img src="{{ url_for('static', filename='img/pfp/default/400x400.jpg')}}" alt="pfp">
