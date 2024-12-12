@@ -1,11 +1,11 @@
 import os
 
 from database import init_db
-import shutil
+from distutils.dir_util import copy_tree
 from pathlib import Path
 
 if Path("./db/GreenGround.db").is_file() == False:
-    shutil.copy('./init-static/img/', './static/img/')
+    copy_tree('./init-static/img/', './static/img/')
     os.mkdir('./static/img/post-img/')
 
     print("Please enter the app's bcrypt key")
