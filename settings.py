@@ -26,6 +26,10 @@ def updatePfp():
         image = Image.open(request.files['uploadImage'], mode='r')
         l = image.resize((400, 400), Image.Resampling.LANCZOS)
         s = image.resize((40, 40), Image.Resampling.LANCZOS)
+        if os.path.exists('./static/img/pfp/'+str(userSession.user_id)):
+            os.remove(os.path.join('./static/img/pfp/'+str(userSession.user_id)+"/400x400.jpg"))
+            os.remove(os.path.join('./static/img/pfp/' + str(userSession.user_id) + "/40x40.jpg"))
+            os.rmdir(os.path.join('./static/img/pfp/'+str(userSession.user_id)))
         os.mkdir('./static/img/pfp/' + str(userSession.user_id))
         l.save('./static/img/pfp/'+str(userSession.user_id)+'/400x400.jpg/')
         s.save('./static/img/pfp/' + str(userSession.user_id) + '/40x40.jpg/')

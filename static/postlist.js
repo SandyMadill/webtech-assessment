@@ -57,7 +57,7 @@ const callBack = (entries) => {
      if(isVisible && stopLoading === false && loading === false){
          loading = true
          $.ajax({
-            url: (`${config.host}/post-list/${JSON.stringify(where)}/desc/${lastDate}/`),
+            url: (`/post-list/${JSON.stringify(where)}/desc/${lastDate}/`),
             type: 'GET',
             contentType: 'application/json',
         success: function(response) {
@@ -90,7 +90,7 @@ const callBack = (entries) => {
      // if the useer isn't clicking a button or link within the post
      if (evt.target.tagName!="A" && evt.target.tagName!="BUTTON"){
          // redirect the user to the post they clicked
-         window.location.href = `${config.host}/post/${evt.currentTarget.postId}/`
+         window.location.href = `/post/${evt.currentTarget.postId}/`
      }
 }
 

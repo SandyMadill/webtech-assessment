@@ -1,6 +1,6 @@
 function follow(userId){
     $.ajax({
-        url: (`${config.host}/follow/${userId}/`),
+        url: (`/follow/${userId}/`),
         type: 'POST',
         contentType: 'application/json',
         success: function(response) {
@@ -17,7 +17,7 @@ function follow(userId){
 }
 function unfollow(userId){
     $.ajax({
-        url: (`${config.host}/follow/${userId}/`),
+        url: (`sss/follow/${userId}/`),
         type: 'DELETE',
         contentType: 'application/json',
         success: function(response) {
