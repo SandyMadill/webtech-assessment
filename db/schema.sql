@@ -26,7 +26,7 @@ DROP TABLE IF EXISTS Report;
 
 CREATE TABLE Report(
 	report_id INTEGER PRIMARY KEY AUTOINCREMENT,
-	explaination TEXT NOT NULL,
+	explanation TEXT NOT NULL,
 	post_id INTEGER,
 	reported_id INTEGER NOT NULL,
 	reporter_id INTEGER NOT NULL,

@@ -8,6 +8,7 @@
     <script src="{{url_for('static', filename='post.js')}}"></script>
     <script src="{{url_for('static', filename='follow.js')}}"></script>
     <script src="{{url_for('static', filename='config.js')}}"></script>
+    <script src="{{url_for('static', filename='report.js')}}"></script>
     <script src="{{url_for('static', filename='notifications.js')}}"></script>
     <title>{{ pageTitle }}</title>
 </head>
@@ -32,6 +33,12 @@
         {% endif %}
         {% if page=='notifications' %}
             {% include 'notifications.html' %}
+        {% elif page=='report' %}
+            {% include 'report.html' %}
+        {% elif page=='view-reports' %}
+            {% include 'viewreports.html' %}
+        {% elif page=='settings' %}
+            {% include 'settings.html' %}
         {% endif %}
     </div>
 </div>

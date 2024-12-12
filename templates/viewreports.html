@@ -1,0 +1,101 @@
+<body >
+    {% if report!=None %}
+        <div class="profile">
+            <div>
+                Username: <a href="/profile/{{ user.userId }}">{{ user.username }}</a>
+                displayName: <a href="/profile/{{ user.userId }}">{{ user.displayName }}</a>
+            </div>
+            <div class="image">
+                {% if os.path.exists('./static/pfp/'+  user.userId|string + '/40x40.csv') %}
+                    <img src="{{ url_for('static', filename='img/pfp/'+user.userId|string +"/400x400.jpg") }}" alt="pfp">
+                {% else %}
+                    <img src="{{ url_for('static', filename='img/pfp/default/400x400.jpg')}}" alt="pfp">
+                {% endif %}
+            </div>
+        </div>
+        <div class="report">
+            {% if post!=None %}
+                post reported:
+                <div id="post-list-item" class="post-list-item" onclick="window.location.href='/post/{{ post.postId }}'">
+                    {% include 'post.html' %}
+                </div>
+            {% endif %}
+            Report made by: <a href="/profile/{{ reporter.userId }}">{{ reporter.username }}</a> <br>
+            Explanation:
+            <p>{{ report.explanation }}</p>
+        </div>
+        <div class="profile">
+            <button onclick="banClicked()">Ban</button>
+            <button onclick="ignore()">Ignore</button>
+        </div>
+        <form class="ban-form" id="ban-form" name="ban-form" method="post">
+            <input type="checkbox" id="permanent" name="permanent">
+            <label for="permanent">Permanent</label>
+            <input type="date" id="unbanDate" name="unbanDate"/>
+            <label for="unbanDate">Unban Date</label>
+            <br>
+            <button type="submit">submit</button>
+        </form>
+    {% else %}
+        There are no reports right now.
+    {% endif %}
+<body>
+<script>
+    document.getElementById("ban-form").style.visibility = "hidden"
+    document.getElementById("unbanDate").disabled = false
+    document.getElementById("permanent").checked = false
+
+    document.getElementById("permanent").addEventListener('click', function () {
+        if (document.getElementById("permanent").checked === false){
+            document.getElementById("unbanDate").disabled = false
+        }
+        else{
+            document.getElementById("unbanDate").disabled = true
+        }
+    });
+
+    function banClicked(){
+        document.getElementById("ban-form").style.visibility = "initial"
+    }
+
+    $(document).on('submit','#ban-form',function(e)
+    {
+        e.preventDefault();
+
+        now = new Date()
+        date = new Date($("#unbanDate").val())
+        //  this blocks the normal procedure for when a post is submitted (the page gets reloaded as a post request)
+        if (document.getElementById("permanent").checked === true || date > now){
+            unbanDate = date.to
+            $.ajax({
+            type:'PUT',
+            url:'/ban/{{ report.reportId }}/{{ user.userId }}/',
+            data:{
+              unbanDate:document.getElementById("unbanDate").value,
+              permanent:document.getElementById("permanent").checked
+            },
+                success:function(response){
+                    window.location.reload()
+                }
+            })
+
+        }
+    });
+
+    function ignore(){
+        $.ajax({
+            type:'PUT',
+            url:'/report/ignore/{{ report.reportId }}/',
+            data:{
+              unbanDate:document.getElementById("unbanDate").value,
+              permanent:document.getElementById("permanent").checked
+            },
+                success:function(response){
+                    window.location.reload()
+                }
+            })
+    }
+
+
+
+</script>

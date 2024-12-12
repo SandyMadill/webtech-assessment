@@ -1,83 +1,84 @@
-<!DOCTYPE html>
-<body>
-    <div class="post">
-            <div class="pfp">
-                {% if rpUser != None %}
-                    <br>
-                {% endif %}
-                <div class="pfp-{{ user.userId }}"></div>
-                {% if os.path.exists('./static/pfp/'+  user.userId|string + '/40x40.csv') %}
-                    <img src="{{ url_for('static', filename='img/pfp/'+user.userId|string +"/40x40.jpg") }}" alt="pfp">
-                {% else %}
-                    <img src="{{ url_for('static', filename='img/pfp/default/40x40.jpg')}}" alt="pfp">
-                {% endif %}
+
+<div class="post">
+        <div class="pfp">
+            {% if rpUser != None %}
                 <br>
-                <div class="thread-line"></div>
-            </div>
-            <div class="rest-of-post">
-                {% if rpUser != None %}
-                    <div id="repost" class="col">{{ rpUser.displayName }} Reposted</div>
-                {% endif %}
-                <div class="user">
-                    <display class="user-details">
-                        <a class="displayName" href="/profile/{{ user.userId }}/">{{user.displayName}}</a><br>
-                        <a class="username" href="/profile/{{ user.userId }}/">@{{user.username}}</a>
-                    </display>
+            {% endif %}
+            <div class="pfp-{{ user.userId }}"></div>
+            {% if os.path.exists('./static/img/pfp/'+  user.userId|string + '/') %}
+                <img src="{{ url_for('static', filename='img/pfp/'+user.userId|string +"/40x40.jpg") }}" alt="pfp">
+            {% else %}
+                <img src="{{ url_for('static', filename='img/pfp/default/40x40.jpg')}}" alt="pfp">
+            {% endif %}
+            <br>
+            <div class="thread-line"></div>
+        </div>
+        <div class="rest-of-post">
+            {% if rpUser != None %}
+                <div id="repost" class="col">{{ rpUser.displayName }} Reposted</div>
+            {% endif %}
+            <div class="user">
+                <display class="user-details">
+                    <a class="displayName" href="/profile/{{ user.userId }}/">{{user.displayName}}</a><br>
+                    <a class="username" href="/profile/{{ user.userId }}/">@{{user.username}}</a>
+                </display>
 
-                    {% if userSession != None and userSession.user_id != post.userId %}
-                        <div class="user-buttons">
-                            <div class="follow-button-{{ user.userId }}">
-                                {% if following %}
-                                    {% include 'unfollowbutton.html' %}
-                                {% elif not following %}
-                                    {% include 'followbutton.html' %}
-                                {% endif %}
-                            </div>
+                {% if userSession != None and userSession.user_id != post.userId %}
+                    <div class="user-buttons">
+                        <div class="follow-button-{{ user.userId }}">
+                            {% if following %}
+                                {% include 'unfollowbutton.html' %}
+                            {% elif not following %}
+                                {% include 'followbutton.html' %}
+                            {% endif %}
                         </div>
-                    {% endif %}
-                </div>
-            <div class="content">
-                <div class="text">
-                    {{post.postText}}
-                </div>
-                <div class="image">
-                    {% if post.hasImages %}
-                            <img src="{{ url_for('static', filename='img/post-img/'+post.postId|string +'/img.jpg') }}" alt="post image">
-                    {% endif %}
-                </div>
-
-            </div>
-            <div class="row">
-                <div class="col">
-                    Likes: <lc class="like-count-{{ post.postId }}"> {{ post.likeCount }}</lc>
-                </div>
-                <div class="col">
-                    Reposts: <rc class="repost-count-{{ post.postId }}">{{ post.repostCount }}</rc>
-                    {{ post.likedPost }}
-                </div>
-            </div>
-                {% if userSession != None %}
-                    <div class="row">
-                        <div class="col">
-                            <div class="like-button-{{ post.postId }}">
-                                {% if post.likesPost %}
-                                    {% include 'unlike-button.html' %}
-                                {% else %}
-                                    {% include 'like-button.html' %}
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="repost-button-{{ post.postId }}">
-                                {% if post.repostedPost %}
-                                    {% include 'unrepost-button.html' %}
-                                {% else %}
-                                    {% include 'repost-button.html' %}
-                                {% endif %}
-                            </div>
-                        </div>
+                        {% if userSession.role == "user"  and userSession.user_id != user.userId and user.role != "mod" %}
+                         <button onclick="window.location.href='/report/{{ user.userId }}/{{ post.postId }}'">Report</button>
+                        {% endif %}
                     </div>
                 {% endif %}
             </div>
+        <div class="content">
+            <div class="text">
+                {{post.postText}}
+            </div>
+            <div class="image">
+                {% if post.hasImages %}
+                        <img src="{{ url_for('static', filename='img/post-img/'+post.postId|string +'/img.jpg') }}" alt="post image">
+                {% endif %}
+            </div>
+
         </div>
-</body>
+        <div class="row">
+            <div class="col">
+                Likes: <lc class="like-count-{{ post.postId }}"> {{ post.likeCount }}</lc>
+            </div>
+            <div class="col">
+                Reposts: <rc class="repost-count-{{ post.postId }}">{{ post.repostCount }}</rc>
+                {{ post.likedPost }}
+            </div>
+        </div>
+            {% if userSession != None %}
+                <div class="row">
+                    <div class="col">
+                        <div class="like-button-{{ post.postId }}">
+                            {% if post.likesPost %}
+                                {% include 'unlike-button.html' %}
+                            {% else %}
+                                {% include 'like-button.html' %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="repost-button-{{ post.postId }}">
+                            {% if post.repostedPost %}
+                                {% include 'unrepost-button.html' %}
+                            {% else %}
+                                {% include 'repost-button.html' %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>

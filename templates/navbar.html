@@ -11,8 +11,12 @@
             <a href="/feed/">Feed</a>
             <a href="/discover/">Discover</a>
             <a href="/profile/{{ userSession.user_id }}">Profile</a>
-            <a href="#">Notifications</a>
+            <a href="/notifications/">Notifications</a>
+            <a href="/settings/">Settings</a>
             <a href="/logout/">Log Out</a>
+            {% if userSession.role == "mod" %}
+                <a href="/report/view/">View Reports</a>
+            {% endif %}
         {% else %}
             <a href="/discover/">Discover</a>
             <a href="/login/">Log In</a>

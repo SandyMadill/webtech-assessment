@@ -1,0 +1,59 @@
+<h4>Your Profile Picture:</h4><br>
+{% if os.path.exists('./static/pfp/'+  userSession.userId|string + '/40x40.csv') %}
+        <img src="{{ url_for('static', filename='img/pfp/'+userSession.userId|string +"/400x400.jpg") }}" alt="pfp">
+    {% else %}
+        <img src="{{ url_for('static', filename='img/pfp/default/400x400.jpg')}}" alt="pfp">
+{% endif %}
+<form method="post" class="change-pfp" id="change-pfp" enctype="multipart/form-data">
+    <input type="file" name="uploadImage" id="uploadImage" onchange="return ValidateFileUpload()" />
+    <button type="submit">Update Profile picture</button>
+</form>
+<br>
+Your username: {{ user.username }}
+<form method="post" class="change-username" id="chang-username" enctype="multipart/form-data">
+    <input type="text" name="username">
+    <button type="submit">Update Username</button>
+</form>
+
+<script>
+
+    imgfile = document.querySelector('#uploadImage')
+    $('#uploadImage').wrap('<form>').closest('form').get(0).reset();
+    $('#uploadImage').unwrap();
+
+    $(document).on('submit','#change-pfp',function(e)
+    {
+        //  this blocks the normal procedure for when a post is submitted (the page gets reloaded as a post request)
+        e.preventDefault();
+            var formData = new FormData(this);
+            console.log(imgfile.files[0])
+            $.ajax({
+                type:'PUT',
+                url:'/settings/pfp/',
+                data: formData,
+                success:function(response){
+
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+        });
+
+    });
+
+    imgfile.onchange = () => {
+        console.log(imgfile.files)
+        if (imgfile.files[0].type!=="image/jpeg" && imgfile.files[0].type!=="image/png"){
+            alert("The image must have the file type of either jpeg, jpg or png")
+            $('#uploadImage').wrap('<form>').closest('form').get(0).reset();
+            $('#uploadImage').unwrap();
+        }
+        else if (imgfile.files[0].size > 5242880){
+            alert("The image must be less than 5MBs")
+            $('#uploadImage').wrap('<form>').closest('form').get(0).reset();
+            $('#uploadImage').unwrap();
+        }
+
+    }
+
+</script>

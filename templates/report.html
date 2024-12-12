@@ -1,0 +1,18 @@
+<body>
+    {% if not reportMade %}
+    <form action="" method="post" name="form">
+			<input type="hidden" id="reported_id" name="reported_id" value="{{ userId }}">
+            {% if post !=None %}
+                <input type="hidden" id="post_id" name="post_id" value="{{ postId }}">
+            {% endif %}
+        <label for="explanation">
+            Please Explain why you think this user should be banned.
+        </label>
+        <br>
+        <textarea class="text-area-form" name="explanation" id="explanation"></textarea><br>
+            <button type="submit">Post</button>
+    </form>
+    {% else %}
+    <h1>Thank you for reporting, we'll sort this soon.</h1>
+    {% endif %}
+</body>

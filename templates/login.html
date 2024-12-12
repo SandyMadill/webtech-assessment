@@ -1,11 +1,19 @@
 <html>
 	<body>
+        {% if banned %}
+            {% if unbanDate == None %}
+                <h1>Your account has been permanently banned</h1>
+            {% else %}
+                <h1>Your account is currently banned, the ban will end on {{ unbanDate }}</h1>
+            {% endif %}
+        {% else %}
 		<form action="" method="post" name="form">
 			<label for="username">Username:</label>
 			<input type="text" name="username" id="username"/><br>
 			<label for="password">Password</label>
-			<input type="text" name="password" id="password"/><br>
+			<input type="password" name="password" id="password"/><br>
 			<input type="submit" name="submit" id="submit"/>
 		</form>
+        {% endif %}
 	</body>
 </html>

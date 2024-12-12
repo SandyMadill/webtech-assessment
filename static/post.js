@@ -188,23 +188,4 @@ function unrepostPost(postId){
     });
 }
 
-//  when an instance of the create post form has been submitted instead of reloading the page it will instead carry out this function
-$(document).on('submit','#create-post',function(e)
-{
-    //  this blocks the normal procedure for when a post is submitted (the page gets reloaded as a post request)
-    e.preventDefault();
-    $.ajax({
-        type:'POST',
-        url:'/create-post/',
-        data:{
-          text:$("#text").val(),
-          replyId:$("#replyId").val()
-        },
-        success:function(response){
-
-        }
-      })
-
-});
-
 

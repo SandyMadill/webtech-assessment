@@ -1,6 +1,13 @@
+import base64
 import datetime
+import os
+import pathlib
 from crypt import methods
+
+import flask
 from flask import Blueprint, render_template, session, request
+from rpm import file
+
 from database import get_db
 from follow import isFollowing
 from notifications import makeNotification, deleteNotification
@@ -36,7 +43,7 @@ def getPostFromSql(sql):
         if post.repostId == None:
             return post
         else:
-            rpsql = db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [post.repostId])
+            rpsql = db.cursor().execute("SELECT * FROM Post p INNER JOIN User u ON p.user_id = u.user_id WHERE post_id=? AND BANNED=FALSE", [post.repostId])
             for rp in rpsql:
                 repost = Post(rp[0], rp[1], rp[2], rp[3], rp[5], rp[6], post.userId)
                 return repost
@@ -45,15 +52,16 @@ def getPostFromSql(sql):
 #returns the post as a post object
 def getPostById(postId):
     db = get_db()
-    return getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
+    return getPostFromSql(db.cursor().execute("SELECT * FROM Post p INNER JOIN User u ON p.user_id = u.user_id WHERE post_id=? AND BANNED=FALSE", [postId]))
 
 
 def getPost(postId=None):
     db = get_db()
-    post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
+    post = getPostFromSql(db.cursor().execute("SELECT * FROM Post p INNER JOIN User u ON p.user_id = u.user_id WHERE post_id=? AND BANNED=FALSE", [postId]))
 
-
-    if (post.repostId == None):
+    if (post == None):
+        return None
+    elif (post.repostId == None):
         user = getUser(post.userId)
         return render_template("post.html", post=post, user=user, rpUser=None, userSession=getSession(), following = isFollowing(post.userId))
     else:
@@ -68,11 +76,13 @@ def getPost(postId=None):
 def getThread(postId=None):
     # get the selected post
     db = get_db()
-    post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
+    post = getPostFromSql(db.cursor().execute("SELECT * FROM Post p INNER JOIN User u ON p.user_id = u.user_id WHERE post_id=? AND BANNED=FALSE", [postId]))
 
     # if this post is not a reply then return a tuple containing the post id and the rendered post
     # if the post is a reply then return it with an array containing the other posts in the thread before it
-    if post.replyId == None:
+    if post == None:
+        return []
+    elif post.replyId == None:
         return [[post.postId, getPost(post.postId)]]
     else:
         threadArray = getThread(post.replyId)
@@ -101,10 +111,35 @@ def createPost():
     else:
         return ""
 
+@postApi.route("/create-post/img/", methods=['POST'])
+def createPostImg():
+    if (checkSession()):
+        db = get_db()
+        userId = session['id']
+        try:
+            replyId = request.form['replyId']
+        except:
+            replyId = None
+        text = request.form['post-text']
+        sql = db.cursor().execute("INSERT INTO Post(user_id, post_text, has_images, date_and_time, reply_id) VALUES(?,?,true,?,?) RETURNING post_id as post_id", (userId, text, datetime.datetime.now(), replyId)).fetchone()
+        db.commit()
+
+        for s in sql:
+            postId = s
+            if (replyId != None):
+                makeNotification(getPostById(replyId).userId, int(session['id']), postId, "reply")
+
+        image = request.files['uploadImage']
+        fileType = (pathlib.Path(image.filename).suffix)
+        if fileType == '.jpeg' or fileType == '.jpg' or fileType == '.png':
+            os.mkdir('./static/img/post-img/'+str(postId))
+            image.save('./static/img/post-img/'+str(postId)+'/img.jpg')
+        return "posted successfully"
+
 @postApi.route("/post/<postId>/")
 def renderPost(postId=None):
     db = get_db()
-    post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
+    post = getPostFromSql(db.cursor().execute("SELECT * FROM Post p INNER JOIN User u ON p.user_id = u.user_id WHERE post_id=? AND BANNED=FALSE", [postId]))
     if (post.repostId == None):
         user = getUser(post.userId)
         return render_template("index.html", page="post", post=post, user=user, rpUser=None, userSession=getSession(), following = isFollowing(post.userId))
@@ -128,7 +163,7 @@ def getLikes(postId=None):
 def getLikeButton(postId=None):
     if checkSession():
         db= get_db()
-        post = getPostFromSql(db.cursor().execute("SELECT * FROM Post WHERE post_id=?", [postId]))
+        post = getPostFromSql(db.cursor().execute("SELECT * FROM Post p INNER JOIN User u ON p.user_id = u.user_id WHERE post_id=? AND BANNED=FALSE", [postId]))
         if (likesPost(postId)):
             return render_template("unlike-button.html", post=post)
         else:
@@ -139,7 +174,7 @@ def likePost(postId=None):
     if checkSession():
         db = get_db()
         if likesPost(postId) == False:
-            db.cursor().execute("INSERT INTO Likes(post_id, user_id) VALUES(?,?)", (postId, [session['id']]))
+            db.cursor().execute("INSERT INTO Likes(post_id, user_id) VALUES(?,?)", (postId, session['id'],))
             db.commit()
 
             makeNotification(getPostById(postId).userId, int(session['id']), postId, "like")
@@ -155,7 +190,7 @@ def unlikePost(postId=None):
     if checkSession():
         db = get_db()
         if likesPost(postId):
-            db.cursor().execute("DELETE FROM Likes WHERE post_id=? AND user_id=?", (postId, session['id']))
+            db.cursor().execute("DELETE FROM Likes WHERE post_id=? AND user_id=?", (postId, session['id'],))
             db.commit()
 
             deleteNotification(getPostById(postId).userId, int(session['id']), postId, "like")
@@ -207,7 +242,7 @@ def unrepost(postId=None):
     if checkSession():
         db = get_db()
         if repostedPost(postId):
-            db.cursor().execute("DELETE FROM Post WHERE repost_id=? AND user_id=?", (postId, session['id']))
+            db.cursor().execute("DELETE FROM Post WHERE repost_id=? AND user_id=?", (postId, session['id'],))
             db.commit()
 
             deleteNotification(getPostById(postId).userId, int(session['id']), postId, "repost")
@@ -220,14 +255,14 @@ def unrepost(postId=None):
 
 def likesPost(postId):
     db = get_db()
-    sql = db.cursor().execute("SELECT user_id FROM Likes WHERE post_id=? AND user_id=?", (postId, session['id']))
+    sql = db.cursor().execute("SELECT user_id FROM Likes WHERE post_id=? AND user_id=?", (postId, session['id'],))
     for a in sql:
         return True
     return False
 
 def repostedPost(postId):
     db = get_db()
-    sql = db.cursor().execute("SELECT user_id FROM Post WHERE repost_id=? AND user_id=?", (postId, session['id']))
+    sql = db.cursor().execute("SELECT user_id FROM Post WHERE repost_id=? AND user_id=?", (postId, session['id'],))
     for a in sql:
         return True
     return False

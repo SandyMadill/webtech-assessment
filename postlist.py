@@ -17,6 +17,8 @@ postListApi = Blueprint('post-list-api', __name__, template_folder='templates')
 def getFeed():
     if checkSession():
         followees = getFolloweeIdsForUser()
+        if len(followees)==0:
+            return render_template("index.html", page="feed", posts=[], lastDate=datetime.datetime.now(), userSession = getSession(), where=[])
         where = []
         for followee in followees:
             where.append(["user_id",followee])
@@ -51,9 +53,9 @@ def getPostList(where = None, ord = None, afterDate = None):
     posts = []
     args = []
     lastDate = None
-    stmt = "SELECT post_id, date_and_time FROM Post WHERE "
+    stmt = "SELECT p.post_id, p.date_and_time FROM Post p INNER JOIN User u ON p.user_id = u.user_id WHERE "
     for i in range(len(where)):
-        stmt+= where[i][0] + "=? "
+        stmt+= "p." + where[i][0] + "=? "
         args.append(where[i][1])
         if(i+1 < len(where)):
             stmt += " OR "
@@ -62,9 +64,9 @@ def getPostList(where = None, ord = None, afterDate = None):
         stmt += " AND "
 
     if (ord == "desc"):
-        stmt += " date_and_time < ? ORDER BY date_and_time DESC LIMIT 10"
+        stmt += " p.date_and_time < ? AND BANNED=FALSE ORDER BY p.date_and_time DESC LIMIT 10"
     else:
-        stmt += " date_and_time > ? ORDER BY date_and_time ASC LIMIT 10"
+        stmt += " p.date_and_time > ? AND BANNED=FALSE ORDER BY p.date_and_time ASC LIMIT 10"
     args.append(afterDate)
     for p in db.cursor().execute(stmt, args):
         posts.append([p[0],getPost(p[0])])

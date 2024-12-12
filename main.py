@@ -1,11 +1,13 @@
 from flask import Flask, session, redirect, send_from_directory
+
+from report import reportApi
 from follow import followApi
 from login import loginApi
 from notifications import notificationApi
 from post import postApi
 from postlist import postListApi
 from register import registerApi
-from images import imageApi
+from settings import settingsApi
 from usersession import getSession
 import os
 
@@ -21,8 +23,9 @@ app.register_blueprint(followApi)
 app.register_blueprint(loginApi)
 app.register_blueprint(registerApi)
 app.register_blueprint(postListApi)
-app.register_blueprint(imageApi)
 app.register_blueprint(notificationApi)
+app.register_blueprint(reportApi)
+app.register_blueprint(settingsApi)
 
 @app.route("/")
 def root():

@@ -19,7 +19,7 @@ def followUser(followeeId=None):
     if (checkSession()):
         if (isFollowing(followeeId) == False and followeeId != session['id']):
             db=get_db()
-            db.cursor().execute("INSERT INTO Follow(follower_id, followee_id) VALUES(?,?)", ([session['id']], followeeId))
+            db.cursor().execute("INSERT INTO Follow(follower_id, followee_id) VALUES(?,?)", (session['id'], followeeId))
             db.commit()
 
             makeNotification(followeeId, int(session['id']), None, "follow")
@@ -34,7 +34,7 @@ def unfollowUser(followeeId=None):
     if (checkSession()):
         if (isFollowing(followeeId) and followeeId != session['id']):
             db=get_db()
-            db.cursor().execute("DELETE FROM Follow WHERE follower_id=? AND followee_id=?", (session['id'], followeeId))
+            db.cursor().execute("DELETE FROM Follow WHERE follower_id=? AND followee_id=?", (session['id'], followeeId,))
             db.commit()
 
             deleteNotification(followeeId, int(session['id']), None, "follow")
@@ -63,7 +63,7 @@ def getFolloweeIdsForUser():
     userIds = []
     if (checkSession()):
         db = get_db()
-        for uId in db.cursor().execute("SELECT followee_id FROM Follow WHERE follower_id=?", (session['id'])):
+        for uId in db.cursor().execute("SELECT f.followee_id FROM Follow f INNER JOIN User u ON f.followee_id = u.user_id WHERE follower_id=? AND banned=FALSE", (session['id'],)):
             userIds.append(uId[0])
     return userIds
 
@@ -74,6 +74,6 @@ def isFollowing(followeeId):
     db = get_db()
     if (checkSession() == False):
         return False
-    for row in db.cursor().execute("SELECT * FROM Follow WHERE follower_id=? AND followee_id=?",(session["id"], followeeId)):
+    for row in db.cursor().execute("SELECT * FROM Follow WHERE follower_id=? AND followee_id=?",(session["id"], followeeId,)):
         return True
     return False
