@@ -72,6 +72,8 @@ def getPostList(where = None, ord = None, afterDate = None):
     args.append(afterDate)
     print(stmt)
     for p in db.cursor().execute(stmt, args):
-        posts.append([p[0],getPost(p[0])])
-        lastDate=p[1]
+        post = getPost(p[0])
+        if post != None:
+            posts.append([p[0],post])
+            lastDate=p[1]
     return [posts, lastDate]
