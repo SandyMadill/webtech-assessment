@@ -70,7 +70,7 @@ def reportView():
                 reported = getUser(report.reportedId)
             return render_template("index.html", page="view-reports", report=report, reporter=reporter, user=reported, post=post, rpUser = None, userSession = getSession())
 
-@reportApi.route('/ban/<reportId>/<userId>', methods=['PUT'])
+@reportApi.route('/ban/<reportId>/<userId>/', methods=['PUT'])
 def ban(userId,reportId):
     if checkSession():
         userSession = getSession()
