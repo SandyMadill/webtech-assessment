@@ -54,20 +54,23 @@ def getPostList(where = None, ord = None, afterDate = None):
     args = []
     lastDate = None
     stmt = "SELECT p.post_id, p.date_and_time FROM Post p INNER JOIN User u ON p.user_id = u.user_id WHERE "
+    if len(where) > 0:
+        stmt += "("
     for i in range(len(where)):
         stmt+= "p." + where[i][0] + "=? "
         args.append(where[i][1])
         if(i+1 < len(where)):
-            stmt += " OR "
+            stmt += "OR "
 
     if len(where) > 0:
-        stmt += " AND "
+        stmt += ") AND "
 
     if (ord == "desc"):
-        stmt += " p.date_and_time < ? AND BANNED=FALSE ORDER BY p.date_and_time DESC LIMIT 10"
+        stmt += "p.date_and_time < ? AND BANNED=FALSE ORDER BY p.date_and_time DESC LIMIT 10"
     else:
-        stmt += " p.date_and_time > ? AND BANNED=FALSE ORDER BY p.date_and_time ASC LIMIT 10"
+        stmt += "p.date_and_time > ? AND BANNED=FALSE ORDER BY p.date_and_time ASC LIMIT 10"
     args.append(afterDate)
+    print(stmt)
     for p in db.cursor().execute(stmt, args):
         posts.append([p[0],getPost(p[0])])
         lastDate=p[1]

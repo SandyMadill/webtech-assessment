@@ -8,6 +8,7 @@ let where
 //  ld holds the date of the last item recieved in this batch of posts
 //  args holds the arguments made in the postlist request
 function initPostList(posts, ld, args){
+    console.log(ld)
     where = args
     lastDate = ld
     insertPosts(posts)
@@ -63,6 +64,8 @@ const callBack = (entries) => {
         success: function(response) {
             insertPosts(response[0])
             lastDate=response[1]
+            console.log(response[1])
+            console.log(lastDate)
             if (response[0].length < 10){
                 stopLoading = true
             }
