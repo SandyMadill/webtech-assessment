@@ -17,7 +17,7 @@ function follow(userId){
 }
 function unfollow(userId){
     $.ajax({
-        url: (`sss/follow/${userId}/`),
+        url: (`/follow/${userId}/`),
         type: 'DELETE',
         contentType: 'application/json',
         success: function(response) {
